@@ -1,10 +1,10 @@
 import React from 'react';
 import { motion } from 'framer-motion';
-import { FiCheck, FiPlay } from 'react-icons/fi';
+import { FiCheck, FiPlay, FiEdit2 } from 'react-icons/fi';
 import { GiWeightLiftingUp } from 'react-icons/gi';
 import ProgressBar from './ProgressBar';
 
-const ExerciseList = ({ exercises, onCompleteSet, onShowMedia, currentExerciseIndex, onSetCurrentExercise }) => {
+const ExerciseList = ({ exercises, onCompleteSet, onShowMedia, currentExerciseIndex, onSetCurrentExercise, onEditExercise }) => {
   return (
     <div className="space-y-4">
       {exercises.map((workoutExercise, exerciseIndex) => {
@@ -29,9 +29,22 @@ const ExerciseList = ({ exercises, onCompleteSet, onShowMedia, currentExerciseIn
                 : 'hover:shadow-lg'
             }`}
           >
-            {/* Exercise Order Number */}
-            <div className="absolute top-2 right-2 w-8 h-8 rounded-full bg-primary text-white text-sm font-bold flex items-center justify-center">
-              {exerciseIndex + 1}
+            {/* Exercise Order Number & Edit Button */}
+            <div className="absolute top-2 right-2 flex items-center space-x-2">
+              {onEditExercise && (
+                <motion.button
+                  whileHover={{ scale: 1.1 }}
+                  whileTap={{ scale: 0.9 }}
+                  onClick={() => onEditExercise(exerciseIndex)}
+                  className="p-2 bg-secondary hover:bg-secondary-dark rounded-full transition-colors"
+                  title="Editar exercício"
+                >
+                  <FiEdit2 className="text-white" size={14} />
+                </motion.button>
+              )}
+              <div className="w-8 h-8 rounded-full bg-primary text-white text-sm font-bold flex items-center justify-center">
+                {exerciseIndex + 1}
+              </div>
             </div>
 
             {/* Current Exercise Indicator */}

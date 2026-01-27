@@ -18,9 +18,9 @@ import ProgressionSuggestionModal from '../components/ProgressionSuggestionModal
 const Workout = () => {
   const navigate = useNavigate();
   const { user } = useFirebaseAuthStore();
-  const { 
+  const {
     fetchUserExercises,
-    userExercises, 
+    userExercises,
     currentWorkout,
     selectedGroups,
     categories,
@@ -33,6 +33,7 @@ const Workout = () => {
     cancelWorkout,
     reorderExercises,
     applyProgression,
+    updateExerciseInWorkout,
     loading,
     restTimer,
     restTimeBetweenSets,
@@ -54,6 +55,13 @@ const Workout = () => {
   const [error, setError] = useState('');
   const [showMediaModal, setShowMediaModal] = useState(false);
   const [selectedExercise, setSelectedExercise] = useState(null);
+  const [showEditModal, setShowEditModal] = useState(false);
+  const [editingExerciseIndex, setEditingExerciseIndex] = useState(null);
+  const [editFormData, setEditFormData] = useState({
+    weight: 0,
+    reps: 0,
+    sets: 0
+  });
 
   // Estado local para exercícios filtrados
   const [filteredExercises, setFilteredExercises] = useState([]);
@@ -154,6 +162,33 @@ const Workout = () => {
   const handleShowMedia = (exercise) => {
     setSelectedExercise(exercise);
     setShowMediaModal(true);
+  };
+
+  const handleEditExercise = (exerciseIndex) => {
+    const exercise = currentWorkout.exercises[exerciseIndex];
+    const exerciseData = exercise.exerciseData;
+
+    setEditingExerciseIndex(exerciseIndex);
+    setEditFormData({
+      weight: exerciseData.current_weight || exerciseData.currentWeight || 0,
+      reps: exerciseData.current_reps || exerciseData.currentReps || 8,
+      sets: exercise.sets.length
+    });
+    setShowEditModal(true);
+  };
+
+  const handleSaveEdit = () => {
+    if (editingExerciseIndex === null) return;
+
+    updateExerciseInWorkout(editingExerciseIndex, {
+      weight: parseFloat(editFormData.weight),
+      reps: parseInt(editFormData.reps),
+      sets: parseInt(editFormData.sets)
+    });
+
+    toast.success('Exercício atualizado com sucesso!');
+    setShowEditModal(false);
+    setEditingExerciseIndex(null);
   };
 
   const handleFinishWorkout = async () => {
@@ -586,6 +621,7 @@ const Workout = () => {
               onShowMedia={handleShowMedia}
               currentExerciseIndex={currentExerciseIndex}
               onSetCurrentExercise={handleSetCurrentExercise}
+              onEditExercise={handleEditExercise}
             />
           ) : (
             <div className="card text-center py-6">
@@ -912,6 +948,104 @@ const Workout = () => {
             onDecline={handleDeclineProgression}
             onClose={handleDeclineProgression}
           />
+        )}
+      </AnimatePresence>
+
+      {/* Edit Exercise Modal */}
+      <AnimatePresence>
+        {showEditModal && editingExerciseIndex !== null && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50"
+            onClick={() => setShowEditModal(false)}
+          >
+            <motion.div
+              initial={{ scale: 0.9, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0.9, opacity: 0 }}
+              className="bg-dark-lighter rounded-xl p-6 w-full max-w-md"
+              onClick={(e) => e.stopPropagation()}
+            >
+              <div className="flex justify-between items-center mb-4">
+                <h2 className="text-xl font-bold">Editar Exercício</h2>
+                <button
+                  onClick={() => setShowEditModal(false)}
+                  className="p-2 hover:bg-dark-medium rounded-full transition-colors"
+                >
+                  <FiX size={20} />
+                </button>
+              </div>
+
+              <p className="text-light-darker mb-4">
+                {currentWorkout.exercises[editingExerciseIndex]?.exerciseData?.exercise?.name}
+              </p>
+
+              <div className="space-y-4">
+                <div>
+                  <label className="block text-sm font-medium mb-2">
+                    Peso ({currentWorkout.exercises[editingExerciseIndex]?.exerciseData?.weightUnit || 'lbs'})
+                  </label>
+                  <input
+                    type="number"
+                    step="0.5"
+                    value={editFormData.weight}
+                    onChange={(e) => setEditFormData({ ...editFormData, weight: e.target.value })}
+                    className="w-full p-3 bg-dark-light rounded-lg border border-dark-medium focus:border-primary focus:outline-none"
+                    placeholder="0"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium mb-2">
+                    Repetições por Série
+                  </label>
+                  <input
+                    type="number"
+                    min="1"
+                    max="50"
+                    value={editFormData.reps}
+                    onChange={(e) => setEditFormData({ ...editFormData, reps: e.target.value })}
+                    className="w-full p-3 bg-dark-light rounded-lg border border-dark-medium focus:border-primary focus:outline-none"
+                    placeholder="8"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium mb-2">
+                    Número de Séries
+                  </label>
+                  <input
+                    type="number"
+                    min="1"
+                    max="10"
+                    value={editFormData.sets}
+                    onChange={(e) => setEditFormData({ ...editFormData, sets: e.target.value })}
+                    className="w-full p-3 bg-dark-light rounded-lg border border-dark-medium focus:border-primary focus:outline-none"
+                    placeholder="3"
+                  />
+                </div>
+              </div>
+
+              <div className="flex space-x-3 mt-6">
+                <button
+                  onClick={() => setShowEditModal(false)}
+                  className="flex-1 py-2 px-4 bg-dark-medium text-light rounded-lg"
+                >
+                  Cancelar
+                </button>
+                <motion.button
+                  whileHover={{ scale: 1.03 }}
+                  whileTap={{ scale: 0.97 }}
+                  onClick={handleSaveEdit}
+                  className="flex-1 btn-primary"
+                >
+                  Salvar
+                </motion.button>
+              </div>
+            </motion.div>
+          </motion.div>
         )}
       </AnimatePresence>
     </div>

@@ -525,7 +525,75 @@ export const useWorkoutStore = create((set, get) => ({
     }));
   },
 
-  // Reordenar exercícios no treino
+  // Atualizar dados do exercício durante o treino
+  updateExerciseInWorkout: (exerciseIndex, updatedData) => {
+    const { currentWorkout } = get();
+    if (!currentWorkout) return;
+
+    const updatedExercises = [...currentWorkout.exercises];
+    if (!updatedExercises[exerciseIndex]) return;
+
+    // Atualizar peso e repetições em todas as séries
+    if (updatedData.weight !== undefined) {
+      updatedExercises[exerciseIndex].sets = updatedExercises[exerciseIndex].sets.map(set => ({
+        ...set,
+        weight: updatedData.weight
+      }));
+
+      // Atualizar também no exerciseData
+      updatedExercises[exerciseIndex].exerciseData = {
+        ...updatedExercises[exerciseIndex].exerciseData,
+        current_weight: updatedData.weight,
+        currentWeight: updatedData.weight
+      };
+    }
+
+    if (updatedData.reps !== undefined) {
+      updatedExercises[exerciseIndex].sets = updatedExercises[exerciseIndex].sets.map(set => ({
+        ...set,
+        reps: updatedData.reps
+      }));
+
+      // Atualizar também no exerciseData
+      updatedExercises[exerciseIndex].exerciseData = {
+        ...updatedExercises[exerciseIndex].exerciseData,
+        current_reps: updatedData.reps,
+        currentReps: updatedData.reps
+      };
+    }
+
+    if (updatedData.sets !== undefined) {
+      const currentSetsCount = updatedExercises[exerciseIndex].sets.length;
+      const newSetsCount = updatedData.sets;
+
+      if (newSetsCount > currentSetsCount) {
+        // Adicionar mais séries
+        const additionalSets = Array(newSetsCount - currentSetsCount).fill().map(() => ({
+          reps: updatedExercises[exerciseIndex].sets[0].reps,
+          weight: updatedExercises[exerciseIndex].sets[0].weight,
+          completed: false
+        }));
+        updatedExercises[exerciseIndex].sets = [...updatedExercises[exerciseIndex].sets, ...additionalSets];
+      } else if (newSetsCount < currentSetsCount) {
+        // Remover séries
+        updatedExercises[exerciseIndex].sets = updatedExercises[exerciseIndex].sets.slice(0, newSetsCount);
+      }
+
+      // Atualizar também no exerciseData
+      updatedExercises[exerciseIndex].exerciseData = {
+        ...updatedExercises[exerciseIndex].exerciseData,
+        current_sets: updatedData.sets,
+        currentSets: updatedData.sets
+      };
+    }
+
+    set((state) => ({
+      currentWorkout: {
+        ...state.currentWorkout,
+        exercises: updatedExercises
+      }
+    }));
+  },
 
   // Completar série de exercício
   completeSet: (exerciseIndex, setIndex) => {
