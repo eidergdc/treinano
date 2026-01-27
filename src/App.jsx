@@ -89,8 +89,14 @@ function App() {
   // Register service worker for PWA
   useEffect(() => {
     const updateSW = registerSW({
-      onNeedRefresh() {},
-      onOfflineReady() {},
+      onNeedRefresh() {
+        console.log('🔄 Nova versão disponível, recarregando...');
+        window.location.reload();
+      },
+      onOfflineReady() {
+        console.log('✅ App pronto para funcionar offline');
+      },
+      immediate: true,
     });
 
     return () => {
