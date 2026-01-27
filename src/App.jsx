@@ -39,31 +39,40 @@ function App() {
   // Initialize auth
   useEffect(() => {
     const init = async () => {
-      if (!initialized) {
-        await initialize();
-      }
-      
-      // Initialize theme after auth is ready
-      console.log('🎨 Inicializando tema após autenticação...');
-      initializeTheme();
-      
-      // Inicializar Service Worker para notificações
-      ServiceWorkerManager.initialize();
-      
-      // Recuperar timers perdidos
-      const recoveredTimers = BackgroundTimer.recoverTimers();
-      if (recoveredTimers.length > 0) {
-        console.log('🔄 Timers recuperados:', recoveredTimers);
-        // Aqui você pode implementar lógica para restaurar os timers
-        // Por exemplo, mostrar uma notificação ou restaurar o estado do treino
-      }
-      
-      // Reduce loading time to 1 second
-      setTimeout(() => {
+      try {
+        console.log('🔧 Iniciando autenticação...');
+        if (!initialized) {
+          await initialize();
+          console.log('✅ Autenticação inicializada');
+        }
+
+        // Initialize theme after auth is ready
+        console.log('🎨 Inicializando tema após autenticação...');
+        initializeTheme();
+        console.log('✅ Tema inicializado');
+
+        // Inicializar Service Worker para notificações
+        console.log('🔔 Inicializando Service Worker...');
+        ServiceWorkerManager.initialize();
+        console.log('✅ Service Worker inicializado');
+
+        // Recuperar timers perdidos
+        const recoveredTimers = BackgroundTimer.recoverTimers();
+        if (recoveredTimers.length > 0) {
+          console.log('🔄 Timers recuperados:', recoveredTimers);
+        }
+
+        // Reduce loading time to 1 second
+        setTimeout(() => {
+          console.log('✅ App pronto!');
+          setIsLoading(false);
+        }, 1000);
+      } catch (error) {
+        console.error('❌ Erro durante inicialização:', error);
         setIsLoading(false);
-      }, 1000);
+      }
     };
-    
+
     init();
   }, [initialized, initialize]);
 
