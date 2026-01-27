@@ -51,10 +51,10 @@ function App() {
         initializeTheme();
         console.log('✅ Tema inicializado');
 
-        // Inicializar Service Worker para notificações
-        console.log('🔔 Inicializando Service Worker...');
-        ServiceWorkerManager.initialize();
-        console.log('✅ Service Worker inicializado');
+        // Inicializar Service Worker para notificações - DESABILITADO TEMPORARIAMENTE
+        // console.log('🔔 Inicializando Service Worker...');
+        // ServiceWorkerManager.initialize();
+        // console.log('✅ Service Worker inicializado');
 
         // Recuperar timers perdidos
         const recoveredTimers = BackgroundTimer.recoverTimers();
@@ -97,20 +97,32 @@ function App() {
 
   // Register service worker for PWA
   useEffect(() => {
-    const updateSW = registerSW({
-      onNeedRefresh() {
-        console.log('🔄 Nova versão disponível, recarregando...');
-        window.location.reload();
-      },
-      onOfflineReady() {
-        console.log('✅ App pronto para funcionar offline');
-      },
-      immediate: true,
-    });
+    // Desabilitar temporariamente o service worker
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.getRegistrations().then(registrations => {
+        console.log('🔍 Service Workers encontrados:', registrations.length);
+        registrations.forEach(registration => {
+          console.log('🗑️ Removendo service worker:', registration);
+          registration.unregister();
+        });
+      });
+    }
 
-    return () => {
-      updateSW && updateSW();
-    };
+    // Comentado temporariamente para debug
+    // const updateSW = registerSW({
+    //   onNeedRefresh() {
+    //     console.log('🔄 Nova versão disponível, recarregando...');
+    //     window.location.reload();
+    //   },
+    //   onOfflineReady() {
+    //     console.log('✅ App pronto para funcionar offline');
+    //   },
+    //   immediate: true,
+    // });
+
+    // return () => {
+    //   updateSW && updateSW();
+    // };
   }, []);
 
   // Detect if app can be installed
