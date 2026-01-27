@@ -792,11 +792,11 @@ const Workout = () => {
               initial={{ scale: 0.9, opacity: 0 }}
               animate={{ scale: 1, opacity: 1 }}
               exit={{ scale: 0.9, opacity: 0 }}
-              className="bg-dark-lighter rounded-xl w-full max-w-md max-h-[90vh] flex flex-col"
+              className="bg-dark-lighter rounded-xl p-6 w-full max-w-md"
+              style={{ maxHeight: '90vh', display: 'flex', flexDirection: 'column' }}
               onClick={(e) => e.stopPropagation()}
             >
-              {/* Header fixo */}
-              <div className="flex items-center justify-between p-6 pb-4 flex-shrink-0">
+              <div className="flex items-center justify-between mb-4">
                 <h2 className="text-xl font-bold">Finalizar Treino</h2>
                 <button
                   onClick={() => {
@@ -810,8 +810,7 @@ const Workout = () => {
                 </button>
               </div>
 
-              {/* Conteúdo com scroll */}
-              <div className="overflow-y-auto flex-1 px-6">
+              <div style={{ overflowY: 'auto', flex: '1 1 auto', minHeight: 0 }}>
                 {error && (
                   <div className="mb-4 p-4 bg-red-600 bg-opacity-10 border border-red-600 rounded-lg text-red-500">
                     <div className="font-bold mb-2">❌ Erro ao finalizar treino:</div>
@@ -879,8 +878,7 @@ const Workout = () => {
                 </div>
               </div>
 
-              {/* Botões fixos na parte inferior */}
-              <div className="flex space-x-3 p-6 pt-4 flex-shrink-0 border-t border-dark-medium">
+              <div className="flex space-x-3 mt-4 pt-4 border-t border-dark-medium" style={{ flexShrink: 0 }}>
                 <button
                   onClick={() => {
                     console.log('🎯 Botão Cancelar clicado no modal');
