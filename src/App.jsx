@@ -6,7 +6,6 @@ import { useWorkoutStore } from './stores/workoutStore';
 import { useThemeStore } from './stores/themeStore';
 import { registerSW } from 'virtual:pwa-register';
 import BackgroundTimer from './utils/BackgroundTimer';
-import ServiceWorkerManager from './utils/ServiceWorkerManager';
 
 // Pages
 import Login from './pages/Login';
@@ -39,40 +38,28 @@ function App() {
   // Initialize auth
   useEffect(() => {
     const init = async () => {
-      try {
-        console.log('🔧 Iniciando autenticação...');
-        if (!initialized) {
-          await initialize();
-          console.log('✅ Autenticação inicializada');
-        }
-
-        // Initialize theme after auth is ready
-        console.log('🎨 Inicializando tema após autenticação...');
-        initializeTheme();
-        console.log('✅ Tema inicializado');
-
-        // Inicializar Service Worker para notificações - DESABILITADO TEMPORARIAMENTE
-        // console.log('🔔 Inicializando Service Worker...');
-        // ServiceWorkerManager.initialize();
-        // console.log('✅ Service Worker inicializado');
-
-        // Recuperar timers perdidos
-        const recoveredTimers = BackgroundTimer.recoverTimers();
-        if (recoveredTimers.length > 0) {
-          console.log('🔄 Timers recuperados:', recoveredTimers);
-        }
-
-        // Reduce loading time to 1 second
-        setTimeout(() => {
-          console.log('✅ App pronto!');
-          setIsLoading(false);
-        }, 1000);
-      } catch (error) {
-        console.error('❌ Erro durante inicialização:', error);
-        setIsLoading(false);
+      if (!initialized) {
+        await initialize();
       }
-    };
+      
+      // Initialize theme after auth is ready
+      console.log('🎨 Inicializando tema após autenticação...');
+      initializeTheme();
 
+      // Recuperar timers perdidos
+      const recoveredTimers = BackgroundTimer.recoverTimers();
+      if (recoveredTimers.length > 0) {
+        console.log('🔄 Timers recuperados:', recoveredTimers);
+        // Aqui você pode implementar lógica para restaurar os timers
+        // Por exemplo, mostrar uma notificação ou restaurar o estado do treino
+      }
+      
+      // Reduce loading time to 1 second
+      setTimeout(() => {
+        setIsLoading(false);
+      }, 1000);
+    };
+    
     init();
   }, [initialized, initialize]);
 
@@ -97,32 +84,14 @@ function App() {
 
   // Register service worker for PWA
   useEffect(() => {
-    // Desabilitar temporariamente o service worker
-    if ('serviceWorker' in navigator) {
-      navigator.serviceWorker.getRegistrations().then(registrations => {
-        console.log('🔍 Service Workers encontrados:', registrations.length);
-        registrations.forEach(registration => {
-          console.log('🗑️ Removendo service worker:', registration);
-          registration.unregister();
-        });
-      });
-    }
+    const updateSW = registerSW({
+      onNeedRefresh() {},
+      onOfflineReady() {},
+    });
 
-    // Comentado temporariamente para debug
-    // const updateSW = registerSW({
-    //   onNeedRefresh() {
-    //     console.log('🔄 Nova versão disponível, recarregando...');
-    //     window.location.reload();
-    //   },
-    //   onOfflineReady() {
-    //     console.log('✅ App pronto para funcionar offline');
-    //   },
-    //   immediate: true,
-    // });
-
-    // return () => {
-    //   updateSW && updateSW();
-    // };
+    return () => {
+      updateSW && updateSW();
+    };
   }, []);
 
   // Detect if app can be installed
