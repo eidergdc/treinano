@@ -5,12 +5,48 @@ import { GiWeightLiftingUp } from 'react-icons/gi';
 import ProgressBar from './ProgressBar';
 
 const ExerciseList = ({ exercises, onCompleteSet, onShowMedia, currentExerciseIndex, onSetCurrentExercise, onEditExercise }) => {
+  // Função para determinar a cor baseada nas repetições
+  const getRepColorClass = (reps, isCompleted, isCurrentExercise) => {
+    if (isCompleted) {
+      // Cores para séries completadas
+      if (reps >= 12) return 'bg-emerald-500 text-white border-emerald-600';
+      if (reps >= 10) return 'bg-blue-500 text-white border-blue-600';
+      if (reps >= 8) return 'bg-amber-500 text-white border-amber-600';
+      return 'bg-primary text-white border-primary';
+    }
+
+    if (isCurrentExercise) {
+      // Cores para exercício atual (não completado)
+      if (reps >= 12) return 'bg-emerald-500/20 text-emerald-400 hover:bg-emerald-500 hover:text-white border border-emerald-500';
+      if (reps >= 10) return 'bg-blue-500/20 text-blue-400 hover:bg-blue-500 hover:text-white border border-blue-500';
+      if (reps >= 8) return 'bg-amber-500/20 text-amber-400 hover:bg-amber-500 hover:text-white border border-amber-500';
+      return 'bg-secondary bg-opacity-20 text-secondary hover:bg-secondary hover:text-white border border-secondary';
+    }
+
+    // Cores para exercícios não iniciados
+    return 'bg-dark-light text-light-darker hover:bg-dark-medium';
+  };
+
+  // Função para determinar a cor do badge de peso baseada nas repetições
+  const getWeightBadgeColorClass = (reps, isCurrentExercise) => {
+    if (isCurrentExercise) {
+      if (reps >= 12) return 'bg-emerald-500 text-white';
+      if (reps >= 10) return 'bg-blue-500 text-white';
+      if (reps >= 8) return 'bg-amber-500 text-white';
+    }
+
+    if (reps >= 12) return 'bg-emerald-500 bg-opacity-20 text-emerald-400';
+    if (reps >= 10) return 'bg-blue-500 bg-opacity-20 text-blue-400';
+    if (reps >= 8) return 'bg-amber-500 bg-opacity-20 text-amber-400';
+    return 'bg-primary bg-opacity-20 text-primary';
+  };
+
   return (
     <div className="space-y-4">
       {exercises.map((workoutExercise, exerciseIndex) => {
         const isCurrentExercise = currentExerciseIndex === exerciseIndex;
         const exerciseData = workoutExercise.exerciseData;
-        
+
         // Normalizar campos para compatibilidade
         const currentWeight = exerciseData.currentWeight || exerciseData.current_weight || 0;
         const weightUnit = exerciseData.weightUnit || exerciseData.weight_unit || 'lbs';
@@ -88,24 +124,22 @@ const ExerciseList = ({ exercises, onCompleteSet, onShowMedia, currentExerciseIn
                     {exerciseData.exercise.name}
                   </h3>
                   <div className="flex items-center space-x-3 mb-2">
-                    <div className={`px-3 py-1 rounded-full ${
-                      isCurrentExercise 
-                        ? 'bg-primary text-white' 
-                        : 'bg-primary bg-opacity-20'
-                    }`}>
-                      <span className={`font-bold text-lg ${
-                        isCurrentExercise ? 'text-white' : 'text-primary'
-                      }`}>
+                    <div className={`px-3 py-1 rounded-full ${getWeightBadgeColorClass(currentReps, isCurrentExercise)}`}>
+                      <span className="font-bold text-lg">
                         {currentWeight}
                       </span>
-                      <span className={`font-medium text-sm ml-1 ${
-                        isCurrentExercise ? 'text-white' : 'text-primary'
-                      }`}>
+                      <span className="font-medium text-sm ml-1">
                         {weightUnit}
                       </span>
                     </div>
-                    <div className={`font-medium ${
-                      isCurrentExercise ? 'text-secondary' : 'text-secondary'
+                    <div className={`font-medium px-2 py-1 rounded ${
+                      currentReps >= 12
+                        ? 'bg-emerald-500/20 text-emerald-400'
+                        : currentReps >= 10
+                        ? 'bg-blue-500/20 text-blue-400'
+                        : currentReps >= 8
+                        ? 'bg-amber-500/20 text-amber-400'
+                        : 'text-secondary'
                     }`}>
                       {currentSets}x{currentReps}
                     </div>
@@ -140,11 +174,7 @@ const ExerciseList = ({ exercises, onCompleteSet, onShowMedia, currentExerciseIn
                     onClick={() => onCompleteSet(exerciseIndex, setIndex)}
                     disabled={set.completed}
                     className={`p-3 rounded-lg flex flex-col items-center justify-center transition-all ${
-                      set.completed
-                        ? 'bg-primary text-white'
-                        : isCurrentExercise
-                          ? 'bg-secondary bg-opacity-20 text-secondary hover:bg-secondary hover:text-white border border-secondary'
-                          : 'bg-dark-light text-light-darker hover:bg-dark-medium'
+                      getRepColorClass(set.reps, set.completed, isCurrentExercise)
                     }`}
                   >
                     <span className="text-sm">Série {setIndex + 1}</span>

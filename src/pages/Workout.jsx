@@ -604,12 +604,34 @@ const Workout = () => {
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.3, delay: 0.3 }}
         >
-          <div className="flex items-center justify-between mb-4">
-            <h2 className="text-xl font-bold">Exercícios do Treino</h2>
-            <div className="bg-primary bg-opacity-20 border border-primary rounded-lg px-3 py-2">
-              <div className="flex items-center text-sm font-medium text-primary">
-                <FiPlay className="mr-2 animate-pulse" size={18} />
-                <span>Clique no ícone play para marcar como atual</span>
+          <div className="mb-4">
+            <div className="flex items-center justify-between mb-3">
+              <h2 className="text-xl font-bold">Exercícios do Treino</h2>
+              <div className="bg-primary bg-opacity-20 border border-primary rounded-lg px-3 py-2">
+                <div className="flex items-center text-sm font-medium text-primary">
+                  <FiPlay className="mr-2 animate-pulse" size={18} />
+                  <span>Clique no ícone play para marcar como atual</span>
+                </div>
+              </div>
+            </div>
+
+            {/* Legenda de Cores de Progressão */}
+            <div className="bg-dark-medium rounded-lg p-3 mb-2">
+              <div className="flex items-center flex-wrap gap-4 text-xs">
+                <span className="text-light-darker font-medium">Progressão:</span>
+                <div className="flex items-center space-x-2">
+                  <div className="w-3 h-3 rounded-full bg-amber-500"></div>
+                  <span className="text-light-darker">8 reps - Iniciante</span>
+                </div>
+                <div className="flex items-center space-x-2">
+                  <div className="w-3 h-3 rounded-full bg-blue-500"></div>
+                  <span className="text-light-darker">10 reps - Intermediário</span>
+                </div>
+                <div className="flex items-center space-x-2">
+                  <div className="w-3 h-3 rounded-full bg-emerald-500"></div>
+                  <span className="text-light-darker">12 reps - Avançado</span>
+                </div>
+                <span className="text-light-darker italic">→ Próximo: +2.5kg</span>
               </div>
             </div>
           </div>
