@@ -4,9 +4,9 @@ import { motion } from 'framer-motion';
 import { useFirebaseAuthStore } from './stores/firebaseAuthStore';
 import { useWorkoutStore } from './stores/workoutStore';
 import { useThemeStore } from './stores/themeStore';
-// import { registerSW } from 'virtual:pwa-register';
+import { registerSW } from 'virtual:pwa-register';
 import BackgroundTimer from './utils/BackgroundTimer';
-// import ServiceWorkerManager from './utils/ServiceWorkerManager';
+import ServiceWorkerManager from './utils/ServiceWorkerManager';
 
 // Pages
 import Login from './pages/Login';
