@@ -1,2 +1,8 @@
-# SPA fallback - TODAS as rotas que não são arquivos
-/* /index.html 200!
+# Páginas de emergência (direto sem rewrite)
+/emergency.html /emergency.html 200
+/diagnose.html /diagnose.html 200
+/test.html /test.html 200
+/clear-cache.html /clear-cache.html 200
+
+# Todas as outras rotas vão para o SPA
+/* /index.html 200
