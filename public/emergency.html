@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Modo Emergência - Treinano</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: Arial, sans-serif;
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+            color: white;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+        .container {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 40px;
+            max-width: 500px;
+            width: 100%;
+            text-align: center;
+        }
+        h1 {
+            font-size: 48px;
+            margin-bottom: 20px;
+        }
+        h2 {
+            font-size: 24px;
+            margin-bottom: 30px;
+            color: #f59e0b;
+        }
+        p {
+            margin-bottom: 20px;
+            line-height: 1.6;
+            color: rgba(255, 255, 255, 0.8);
+        }
+        .btn {
+            display: block;
+            width: 100%;
+            padding: 15px;
+            margin: 10px 0;
+            font-size: 16px;
+            font-weight: bold;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        .btn-primary {
+            background: #ef4444;
+            color: white;
+        }
+        .btn-primary:hover {
+            background: #dc2626;
+            transform: scale(1.05);
+        }
+        .btn-secondary {
+            background: #3b82f6;
+            color: white;
+        }
+        .btn-secondary:hover {
+            background: #2563eb;
+            transform: scale(1.05);
+        }
+        .status {
+            margin-top: 20px;
+            padding: 15px;
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 10px;
+            font-size: 14px;
+        }
+        .success {
+            color: #10b981;
+        }
+        .loading {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid rgba(255, 255, 255, 0.3);
+            border-top-color: white;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🛠️</h1>
+        <h2>Modo Emergência</h2>
+        <p>Esta página permite limpar todos os dados em cache e reiniciar a aplicação do zero.</p>
+
+        <button class="btn btn-primary" onclick="clearEverything()">
+            🗑️ Limpar Tudo e Reiniciar
+        </button>
+
+        <button class="btn btn-secondary" onclick="location.href='/'">
+            🔙 Voltar ao App
+        </button>
+
+        <div id="status" class="status" style="display: none;"></div>
+    </div>
+
+    <script>
+        async function clearEverything() {
+            const statusEl = document.getElementById('status');
+            statusEl.style.display = 'block';
+            statusEl.innerHTML = '<div class="loading"></div> Limpando...';
+
+            try {
+                // 1. Unregister all service workers
+                if ('serviceWorker' in navigator) {
+                    const registrations = await navigator.serviceWorker.getRegistrations();
+                    for (const registration of registrations) {
+                        await registration.unregister();
+                    }
+                    statusEl.innerHTML += '<br>✅ Service Workers removidos';
+                }
+
+                // 2. Clear all caches
+                if ('caches' in window) {
+                    const names = await caches.keys();
+                    for (const name of names) {
+                        await caches.delete(name);
+                    }
+                    statusEl.innerHTML += '<br>✅ Cache limpo';
+                }
+
+                // 3. Clear localStorage
+                localStorage.clear();
+                statusEl.innerHTML += '<br>✅ LocalStorage limpo';
+
+                // 4. Clear sessionStorage
+                sessionStorage.clear();
+                statusEl.innerHTML += '<br>✅ SessionStorage limpo';
+
+                // 5. Clear IndexedDB
+                if ('indexedDB' in window) {
+                    const dbs = await indexedDB.databases();
+                    for (const db of dbs) {
+                        indexedDB.deleteDatabase(db.name);
+                    }
+                    statusEl.innerHTML += '<br>✅ IndexedDB limpo';
+                }
+
+                statusEl.innerHTML += '<br><br><span class="success">✅ Tudo limpo! Redirecionando...</span>';
+
+                setTimeout(() => {
+                    window.location.href = '/';
+                }, 2000);
+            } catch (error) {
+                statusEl.innerHTML = `<span style="color: #ef4444;">❌ Erro: ${error.message}</span>`;
+            }
+        }
+    </script>
+</body>
+</html>
