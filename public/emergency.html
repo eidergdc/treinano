@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Emergência - Treinano</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 20px;
+            font-family: -apple-system, BlinkMacSystemFont, sans-serif;
+            background: linear-gradient(135deg, #f97316 0%, #ea580c 100%);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            text-align: center;
+        }
+        .box {
+            background: rgba(0, 0, 0, 0.3);
+            backdrop-filter: blur(10px);
+            padding: 40px;
+            border-radius: 20px;
+            max-width: 400px;
+        }
+        h1 {
+            font-size: 48px;
+            margin: 0 0 20px 0;
+        }
+        p {
+            font-size: 18px;
+            line-height: 1.6;
+            margin: 15px 0;
+        }
+        button {
+            background: white;
+            color: #f97316;
+            border: none;
+            padding: 15px 40px;
+            border-radius: 10px;
+            font-size: 18px;
+            font-weight: bold;
+            cursor: pointer;
+            margin: 10px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+        }
+        .small {
+            font-size: 14px;
+            opacity: 0.9;
+            margin-top: 30px;
+        }
+    </style>
+</head>
+<body>
+    <div class="box">
+        <h1>✅</h1>
+        <p><strong>O site está funcionando!</strong></p>
+        <p>Se você está vendo isso, significa que o servidor está OK.</p>
+        <button onclick="limpar()">Limpar Tudo</button>
+        <button onclick="irParaApp()">Ir para o App</button>
+        <button onclick="diagnose()">Diagnóstico</button>
+        <p class="small">Criado em: <span id="time"></span></p>
+    </div>
+
+    <script>
+        document.getElementById('time').textContent = new Date().toLocaleString('pt-BR');
+        console.log('✅ Página de emergência carregou com sucesso!');
+
+        async function limpar() {
+            try {
+                if ('serviceWorker' in navigator) {
+                    const regs = await navigator.serviceWorker.getRegistrations();
+                    for (let reg of regs) {
+                        await reg.unregister();
+                    }
+                }
+                if ('caches' in window) {
+                    const names = await caches.keys();
+                    for (let name of names) {
+                        await caches.delete(name);
+                    }
+                }
+                localStorage.clear();
+                sessionStorage.clear();
+                alert('✅ Tudo limpo!');
+                setTimeout(() => window.location.href = '/', 1000);
+            } catch (e) {
+                alert('Erro: ' + e.message);
+            }
+        }
+
+        function irParaApp() {
+            window.location.href = '/';
+        }
+
+        function diagnose() {
+            window.location.href = '/diagnose.html';
+        }
+    </script>
+</body>
+</html>
