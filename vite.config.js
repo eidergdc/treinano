@@ -8,10 +8,6 @@ export default defineConfig({
     VitePWA({
       registerType: 'autoUpdate',
       includeAssets: ['icon.svg', 'apple-touch-icon.png'],
-      workbox: {
-        skipWaiting: true,
-        clientsClaim: true
-      },
       manifest: {
         name: 'Treinano',
         short_name: 'Treinano',

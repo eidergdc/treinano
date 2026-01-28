@@ -6,6 +6,7 @@ import { useWorkoutStore } from './stores/workoutStore';
 import { useThemeStore } from './stores/themeStore';
 import { registerSW } from 'virtual:pwa-register';
 import BackgroundTimer from './utils/BackgroundTimer';
+import ServiceWorkerManager from './utils/ServiceWorkerManager';
 
 // Pages
 import Login from './pages/Login';
@@ -45,7 +46,10 @@ function App() {
       // Initialize theme after auth is ready
       console.log('🎨 Inicializando tema após autenticação...');
       initializeTheme();
-
+      
+      // Inicializar Service Worker para notificações
+      ServiceWorkerManager.initialize();
+      
       // Recuperar timers perdidos
       const recoveredTimers = BackgroundTimer.recoverTimers();
       if (recoveredTimers.length > 0) {
