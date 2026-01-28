@@ -48,11 +48,10 @@ const ExerciseList = ({ exercises, onCompleteSet, onShowMedia, currentExerciseIn
         const exerciseData = workoutExercise.exerciseData;
 
         // Normalizar campos para compatibilidade
-        // Usar os dados reais das séries ao invés do exerciseData para mostrar valores atuais
-        const currentWeight = workoutExercise.sets[0]?.weight || exerciseData.currentWeight || exerciseData.current_weight || 0;
+        const currentWeight = exerciseData.currentWeight || exerciseData.current_weight || 0;
         const weightUnit = exerciseData.weightUnit || exerciseData.weight_unit || 'lbs';
-        const currentSets = workoutExercise.sets.length;
-        const currentReps = workoutExercise.sets[0]?.reps || exerciseData.currentReps || exerciseData.current_reps || 8;
+        const currentSets = exerciseData.currentSets || exerciseData.current_sets || 3;
+        const currentReps = exerciseData.currentReps || exerciseData.current_reps || 8;
         
         return (
           <motion.div
