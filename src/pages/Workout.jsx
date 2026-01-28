@@ -792,7 +792,7 @@ const Workout = () => {
               initial={{ scale: 0.9, opacity: 0 }}
               animate={{ scale: 1, opacity: 1 }}
               exit={{ scale: 0.9, opacity: 0 }}
-              className="bg-dark-lighter rounded-xl p-6 w-full max-w-md max-h-[90vh] overflow-y-auto"
+              className="bg-dark-lighter rounded-xl p-6 w-full max-w-md"
               onClick={(e) => e.stopPropagation()}
             >
               <div className="flex items-center justify-between mb-4">
@@ -808,8 +808,8 @@ const Workout = () => {
                   <FiX size={20} />
                 </button>
               </div>
-
-
+              
+              
               {error && (
                 <div className="mb-4 p-4 bg-red-600 bg-opacity-10 border border-red-600 rounded-lg text-red-500">
                   <div className="font-bold mb-2">❌ Erro ao finalizar treino:</div>
@@ -824,12 +824,12 @@ const Workout = () => {
                   </div>
                 </div>
               )}
-
+              
               <div className="mb-6">
                 <p className="mb-4">
                   Tem certeza que deseja finalizar o treino atual?
                 </p>
-
+                
                {/* Mostrar resumo de exercícios completos vs incompletos */}
                {currentWorkout && (
                  <div className="mb-4 p-4 bg-dark-light rounded-lg">
@@ -838,12 +838,12 @@ const Workout = () => {
                      const totalSets = exercise.sets?.length || 0;
                      const completedSets = exercise.sets?.filter(set => set.completed).length || 0;
                      const isComplete = completedSets === totalSets && totalSets > 0;
-
+                     
                      return (
                        <div key={index} className="flex justify-between items-center py-1">
                          <span className="text-sm">{exercise.exerciseData.exercise.name}</span>
                          <span className={`text-sm font-medium ${
-                           isComplete ? 'text-green-500' :
+                           isComplete ? 'text-green-500' : 
                            completedSets > 0 ? 'text-yellow-500' : 'text-light-darker'
                          }`}>
                            {completedSets}/{totalSets} séries
@@ -852,7 +852,7 @@ const Workout = () => {
                        </div>
                      );
                    })}
-
+                   
                    <div className="mt-3 pt-3 border-t border-dark-medium">
                      <p className="text-xs text-light-darker">
                        💡 <strong>Lembrete:</strong> Apenas exercícios com todas as séries completadas contarão para seu progresso.
@@ -860,12 +860,12 @@ const Workout = () => {
                    </div>
                  </div>
                )}
-
+               
                 <div className="bg-dark-light p-4 rounded-lg">
                   <div className="flex items-center mb-2">
                     <span>Tempo de treino: {formatTimer()}</span>
                   </div>
-
+                  
                   <div className="flex items-center">
                     <span>
                       Exercícios: {currentWorkout?.exercises.length || 0}
@@ -873,7 +873,7 @@ const Workout = () => {
                   </div>
                 </div>
               </div>
-
+              
               <div className="flex space-x-3">
                 <button
                   onClick={() => {
