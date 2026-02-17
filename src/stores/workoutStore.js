@@ -977,17 +977,41 @@ export const useWorkoutStore = create((set, get) => ({
   // Atualizar exercício do usuário
   updateUserExercise: async (userId, exerciseId, updateData) => {
     try {
+      console.log('🔄 === ATUALIZANDO EXERCÍCIO DO USUÁRIO ===');
+      console.log('📝 Exercise ID:', exerciseId);
+      console.log('📊 Dados para atualizar:', updateData);
+
       set({ loading: true });
-      
-      await updateDoc(doc(db, 'user_exercises', exerciseId), {
-        ...updateData,
+
+      // Normalizar dados para ambos os formatos (snake_case e camelCase)
+      const normalizedData = {
+        current_weight: updateData.current_weight,
+        currentWeight: updateData.current_weight,
+        current_reps: updateData.current_reps,
+        currentReps: updateData.current_reps,
+        current_sets: updateData.current_sets,
+        currentSets: updateData.current_sets,
         updatedAt: new Date()
-      });
-      
+      };
+
+      console.log('💾 Salvando dados normalizados:', normalizedData);
+
+      await updateDoc(doc(db, 'user_exercises', exerciseId), normalizedData);
+
+      console.log('✅ Dados salvos no Firebase');
+
+      // Verificar se foi salvo corretamente
+      const verifyDoc = await getDoc(doc(db, 'user_exercises', exerciseId));
+      if (verifyDoc.exists()) {
+        console.log('📊 Dados após salvar:', verifyDoc.data());
+      }
+
       await get().fetchUserExercises(userId);
       set({ loading: false });
+
+      console.log('✅ === EXERCÍCIO ATUALIZADO COM SUCESSO ===');
     } catch (error) {
-      console.error('Error updating exercise:', error);
+      console.error('❌ Error updating exercise:', error);
       set({ error: error.message, loading: false });
       throw error;
     }
