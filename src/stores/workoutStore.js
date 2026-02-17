@@ -685,17 +685,58 @@ export const useWorkoutStore = create((set, get) => ({
       });
       
       console.log(`📈 Atualizando progresso de ${fullyCompletedExercises.length} exercícios...`);
-      
+
       const progressionSuggestions = [];
-      
-      // Atualizar progresso em paralelo
+
+      // PRIMEIRO: Salvar os valores alterados (peso, séries, reps) de TODOS os exercícios
+      console.log('💾 === SALVANDO VALORES ALTERADOS ===');
+      const savePromises = currentWorkout.exercises.map(async (exercise) => {
+        try {
+          if (!exercise.userExerciseId) {
+            console.log(`⚠️ Exercício sem userExerciseId: ${exercise.exerciseData?.exercise?.name}`);
+            return { success: false, reason: 'No userExerciseId' };
+          }
+
+          // Pegar o último peso/reps/sets usados (da última série)
+          const lastSet = exercise.sets?.[exercise.sets.length - 1];
+          if (!lastSet) {
+            console.log(`⚠️ Exercício sem séries: ${exercise.exerciseData?.exercise?.name}`);
+            return { success: false, reason: 'No sets' };
+          }
+
+          const updateData = {
+            current_weight: lastSet.weight || exercise.exerciseData.current_weight || 0,
+            currentWeight: lastSet.weight || exercise.exerciseData.current_weight || 0,
+            current_reps: lastSet.reps || exercise.exerciseData.current_reps || 0,
+            currentReps: lastSet.reps || exercise.exerciseData.current_reps || 0,
+            current_sets: exercise.sets.length,
+            currentSets: exercise.sets.length,
+            updatedAt: new Date()
+          };
+
+          console.log(`💾 Salvando valores para ${exercise.exerciseData.exercise.name}:`, updateData);
+
+          await updateDoc(doc(db, 'user_exercises', exercise.userExerciseId), updateData);
+
+          console.log(`✅ Valores salvos para ${exercise.exerciseData.exercise.name}`);
+          return { success: true, exercise: exercise.exerciseData.exercise.name };
+        } catch (error) {
+          console.error(`❌ Erro ao salvar valores de ${exercise.exerciseData?.exercise?.name}:`, error);
+          return { success: false, exercise: exercise.exerciseData?.exercise?.name, error };
+        }
+      });
+
+      await Promise.allSettled(savePromises);
+      console.log('✅ === VALORES SALVOS ===');
+
+      // SEGUNDO: Atualizar progresso (completedWorkouts) apenas dos exercícios completos
       const progressPromises = fullyCompletedExercises.map(async (exercise) => {
         try {
-          console.log(`🔄 Iniciando atualização para exercício: ${exercise.exerciseData.exercise.name} (ID: ${exercise.userExerciseId})`);
+          console.log(`🔄 Iniciando atualização de progresso para: ${exercise.exerciseData.exercise.name} (ID: ${exercise.userExerciseId})`);
           console.log(`📊 Dados do exercício antes da atualização:`, exercise.exerciseData);
           const result = await get().updateExerciseProgress(exercise.userExerciseId, true);
           console.log(`✅ Progresso atualizado para ${exercise.exerciseData.exercise.name}:`, result);
-          
+
           // Se atingiu 10 treinos, adicionar à lista de sugestões
           if (result?.shouldShowProgressionModal) {
             progressionSuggestions.push({
@@ -707,7 +748,7 @@ export const useWorkoutStore = create((set, get) => ({
               weightUnit: exercise.exerciseData.weightUnit || 'lbs'
             });
           }
-          
+
           return { success: true, exercise: exercise.exerciseData.exercise.name };
         } catch (error) {
           console.error(`Erro ao atualizar ${exercise.exerciseData.exercise.name}:`, error);
