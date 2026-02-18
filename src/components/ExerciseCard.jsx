@@ -1,11 +1,13 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
-import { motion } from 'framer-motion';
-import { FiChevronRight, FiBarChart2, FiVideo } from 'react-icons/fi';
+import { motion, AnimatePresence } from 'framer-motion';
+import { FiChevronRight, FiBarChart2, FiVideo, FiTrash2 } from 'react-icons/fi';
 import ProgressBar from './ProgressBar';
 
-const ExerciseCard = ({ exercise, showProgress = true, onMediaClick }) => {
+const ExerciseCard = ({ exercise, showProgress = true, onMediaClick, showDeleteButton = false, onDelete }) => {
   if (!exercise) return null;
+
+  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
 
   // Get the exercise data depending on whether it's a user exercise or regular exercise
   const exerciseData = exercise.exercise || exercise;
@@ -51,8 +53,26 @@ const ExerciseCard = ({ exercise, showProgress = true, onMediaClick }) => {
       onMediaClick(exerciseData);
     }
   };
-  
+
+  const handleDeleteClick = (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setShowDeleteConfirm(true);
+  };
+
+  const handleConfirmDelete = () => {
+    if (onDelete) {
+      onDelete(exercise.id);
+    }
+    setShowDeleteConfirm(false);
+  };
+
+  const handleCancelDelete = () => {
+    setShowDeleteConfirm(false);
+  };
+
   return (
+    <>
     <motion.div
       whileHover={{ scale: 1.02 }}
       whileTap={{ scale: 0.98 }}
@@ -135,11 +155,67 @@ const ExerciseCard = ({ exercise, showProgress = true, onMediaClick }) => {
               </div>
             )}
           </div>
-          
-          <FiChevronRight size={20} className="text-light-darker ml-2" />
+
+          <div className="flex items-center space-x-2">
+            {showDeleteButton && (
+              <motion.button
+                whileHover={{ scale: 1.1 }}
+                whileTap={{ scale: 0.9 }}
+                onClick={handleDeleteClick}
+                className="p-2 bg-red-600 bg-opacity-20 hover:bg-opacity-30 rounded-lg transition-colors"
+              >
+                <FiTrash2 size={18} className="text-red-500" />
+              </motion.button>
+            )}
+            <FiChevronRight size={20} className="text-light-darker ml-2" />
+          </div>
         </div>
       </Link>
     </motion.div>
+
+    <AnimatePresence>
+      {showDeleteConfirm && (
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          exit={{ opacity: 0 }}
+          className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50"
+          onClick={handleCancelDelete}
+        >
+          <motion.div
+            initial={{ scale: 0.9, opacity: 0 }}
+            animate={{ scale: 1, opacity: 1 }}
+            exit={{ scale: 0.9, opacity: 0 }}
+            className="bg-dark-lighter rounded-xl p-6 w-full max-w-md"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <h2 className="text-xl font-bold mb-4">Excluir Exercício</h2>
+
+            <p className="mb-6 text-light-darker">
+              Tem certeza que deseja excluir o exercício <span className="font-bold text-light">{exerciseData.name}</span>? Esta ação não pode ser desfeita e todo o histórico deste exercício será perdido.
+            </p>
+
+            <div className="flex space-x-3">
+              <button
+                onClick={handleCancelDelete}
+                className="flex-1 py-2 px-4 bg-dark-medium text-light rounded-lg"
+              >
+                Cancelar
+              </button>
+              <motion.button
+                whileHover={{ scale: 1.03 }}
+                whileTap={{ scale: 0.97 }}
+                onClick={handleConfirmDelete}
+                className="flex-1 bg-red-600 hover:bg-red-700 text-white font-bold py-2 px-4 rounded-lg shadow-md transition-all duration-300"
+              >
+                Excluir
+              </motion.button>
+            </div>
+          </motion.div>
+        </motion.div>
+      )}
+    </AnimatePresence>
+    </>
   );
 };
 

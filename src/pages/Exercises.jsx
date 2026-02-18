@@ -24,13 +24,14 @@ const categories = [
 
 const Exercises = () => {
   const { user } = useFirebaseAuthStore();
-  const { 
+  const {
     fetchUserExercises,
     createCustomExercise,
+    deleteUserExercise,
     userExercises,
-    loading 
+    loading
   } = useWorkoutStore();
-  
+
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('Todos');
   const [showCreateModal, setShowCreateModal] = useState(false);
@@ -64,13 +65,13 @@ const Exercises = () => {
     console.log('🚀 === CRIANDO EXERCÍCIO PERSONALIZADO ===');
     console.log('📝 Dados do exercício:', newExercise);
     console.log('👤 Usuário:', user?.uid);
-    
+
     if (!newExercise.name || !newExercise.category || !newExercise.initialWeight) {
       console.error('❌ Campos obrigatórios não preenchidos');
       toast.error('Por favor, preencha os campos obrigatórios');
       return;
     }
-    
+
     try {
       const exerciseData = {
         name: newExercise.name,
@@ -81,11 +82,11 @@ const Exercises = () => {
         initialWeight: parseFloat(newExercise.initialWeight),
         weightUnit: newExercise.weightUnit
       };
-      
+
       console.log('📤 Enviando dados para createCustomExercise:', exerciseData);
       const result = await createCustomExercise(user.uid, exerciseData);
       console.log('✅ Exercício criado com sucesso:', result);
-      
+
       setShowCreateModal(false);
       setNewExercise({
         name: '',
@@ -96,12 +97,24 @@ const Exercises = () => {
         initialWeight: '',
         weightUnit: 'lbs'
       });
-      
+
       toast.success('Exercício personalizado criado com sucesso');
     } catch (error) {
       console.error('❌ === ERRO AO CRIAR EXERCÍCIO ===');
       console.error('❌ Erro completo:', error);
       toast.error('Erro ao criar exercício personalizado');
+    }
+  };
+
+  // Excluir exercício
+  const handleDeleteExercise = async (exerciseId) => {
+    try {
+      console.log('🗑️ Excluindo exercício:', exerciseId);
+      await deleteUserExercise(user.uid, exerciseId);
+      toast.success('Exercício excluído com sucesso');
+    } catch (error) {
+      console.error('❌ Erro ao excluir exercício:', error);
+      toast.error('Erro ao excluir exercício');
     }
   };
 
