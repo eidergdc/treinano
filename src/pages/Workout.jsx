@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-import { FiPlus, FiSearch, FiCheck, FiX, FiMenu, FiPlay } from 'react-icons/fi';
+import { FiPlus, FiSearch, FiCheck, FiX, FiMenu, FiPlay, FiTrash2 } from 'react-icons/fi';
 import { GiWeightLiftingUp } from 'react-icons/gi';
 import { toast } from 'react-toastify';
 import { useFirebaseAuthStore } from '../stores/firebaseAuthStore';
@@ -34,6 +34,7 @@ const Workout = () => {
     reorderExercises,
     applyProgression,
     updateExerciseInWorkout,
+    removeExerciseFromWorkout,
     loading,
     restTimer,
     restTimeBetweenSets,
@@ -1048,6 +1049,23 @@ const Workout = () => {
                     className="w-full p-3 bg-dark-light rounded-lg border border-dark-medium focus:border-primary focus:outline-none"
                     placeholder="3"
                   />
+                </div>
+
+                <div className="pt-4 border-t border-dark-medium">
+                  <motion.button
+                    whileHover={{ scale: 1.02 }}
+                    whileTap={{ scale: 0.98 }}
+                    onClick={() => {
+                      removeExerciseFromWorkout(editingExerciseIndex);
+                      setShowEditModal(false);
+                      setEditingExerciseIndex(null);
+                      toast.success('Exercício removido do treino');
+                    }}
+                    className="w-full bg-red-600 bg-opacity-20 hover:bg-opacity-30 text-red-500 font-medium py-2 px-4 rounded-lg transition-all duration-300 flex items-center justify-center"
+                  >
+                    <FiTrash2 className="mr-2" />
+                    Remover do Treino
+                  </motion.button>
                 </div>
               </div>
 

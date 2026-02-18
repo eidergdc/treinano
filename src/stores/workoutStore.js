@@ -526,6 +526,21 @@ export const useWorkoutStore = create((set, get) => ({
   },
 
   // Atualizar dados do exercício durante o treino
+  removeExerciseFromWorkout: (exerciseIndex) => {
+    const { currentWorkout } = get();
+    if (!currentWorkout) return;
+
+    const updatedExercises = [...currentWorkout.exercises];
+    updatedExercises.splice(exerciseIndex, 1);
+
+    set({
+      currentWorkout: {
+        ...currentWorkout,
+        exercises: updatedExercises
+      }
+    });
+  },
+
   updateExerciseInWorkout: (exerciseIndex, updatedData) => {
     const { currentWorkout } = get();
     if (!currentWorkout) return;
