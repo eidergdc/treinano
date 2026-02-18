@@ -462,7 +462,7 @@ const ExerciseDetail = () => {
                         onChange={(e) => {
                           const newUnit = e.target.value;
                           let convertedWeight = editForm.weight;
-                          
+
                           // Converter peso se já houver um valor
                           if (convertedWeight && !isNaN(convertedWeight)) {
                             if (newUnit === 'kg' && editForm.weightUnit === 'lbs') {
@@ -473,9 +473,9 @@ const ExerciseDetail = () => {
                               convertedWeight = (parseFloat(convertedWeight) * 2.20462).toFixed(1);
                             }
                           }
-                          
+
                           setEditForm({
-                            ...editForm, 
+                            ...editForm,
                             weightUnit: newUnit,
                             weight: convertedWeight
                           });
@@ -487,7 +487,7 @@ const ExerciseDetail = () => {
                       </select>
                     </div>
                     <p className="text-xs text-light-darker mt-1">
-                      {editForm.weightUnit === 'lbs' 
+                      {editForm.weightUnit === 'lbs'
                         ? 'Peso em libras (padrão americano)'
                         : 'Peso em quilogramas (padrão métrico)'
                       }
@@ -520,6 +520,21 @@ const ExerciseDetail = () => {
                       max="50"
                       className="input-field"
                     />
+                  </div>
+
+                  <div className="pt-4 border-t border-dark-medium">
+                    <motion.button
+                      whileHover={{ scale: 1.02 }}
+                      whileTap={{ scale: 0.98 }}
+                      onClick={() => {
+                        setShowEditModal(false);
+                        setShowDeleteModal(true);
+                      }}
+                      className="w-full bg-red-600 bg-opacity-20 hover:bg-opacity-30 text-red-500 font-medium py-2 px-4 rounded-lg transition-all duration-300 flex items-center justify-center"
+                    >
+                      <FiTrash2 className="mr-2" />
+                      Excluir Exercício
+                    </motion.button>
                   </div>
                 </div>
               ) : (
@@ -605,6 +620,21 @@ const ExerciseDetail = () => {
                     <p className="text-xs text-light-darker mt-1">
                       Use o formato de incorporação do YouTube
                     </p>
+                  </div>
+
+                  <div className="pt-4 border-t border-dark-medium">
+                    <motion.button
+                      whileHover={{ scale: 1.02 }}
+                      whileTap={{ scale: 0.98 }}
+                      onClick={() => {
+                        setShowEditModal(false);
+                        setShowDeleteModal(true);
+                      }}
+                      className="w-full bg-red-600 bg-opacity-20 hover:bg-opacity-30 text-red-500 font-medium py-2 px-4 rounded-lg transition-all duration-300 flex items-center justify-center"
+                    >
+                      <FiTrash2 className="mr-2" />
+                      Excluir Exercício
+                    </motion.button>
                   </div>
                 </div>
               )}
